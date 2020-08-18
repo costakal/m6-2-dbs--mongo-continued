@@ -8,6 +8,9 @@ const options = {
   useUnifiedTopology: true,
 };
 
+const NUM_OF_ROWS = 8;
+const SEATS_PER_ROW = 12;
+
 const getSeats = async (req, res) => {
   const client = await MongoClient(MONGO_URI, options);
 
@@ -16,7 +19,18 @@ const getSeats = async (req, res) => {
   const db = client.db("flights");
 
   const seats = await db.collection("seats").find().toArray();
-  res.status(200).json({ seats: seats });
+
+  const seatObject = {};
+
+  seats.forEach((seat) => {
+    seatObject[seat._id] = seat;
+  });
+
+  res.status(200).json({
+    seats: seatObject,
+    numOfRows: NUM_OF_ROWS,
+    seatsPerRow: SEATS_PER_ROW,
+  });
 
   client.close();
 };
