@@ -43,11 +43,11 @@ const updateSeat = async (req, res) => {
 
     const db = client.db("flights");
 
-    const { seatId } = req.body;
+    const { seatId, fullName, email } = req.body;
 
     const query = { _id: seatId };
     console.log(query);
-    const newValues = { $set: { isBooked: true } };
+    const newValues = { $set: { fullName, email, isBooked: true } };
 
     const r = await db.collection("seats").updateOne(query, newValues);
 
