@@ -1,8 +1,13 @@
 const router = require("express").Router();
-const { delay } = require("./helpers");
 
 const NUM_OF_ROWS = 8;
 const SEATS_PER_ROW = 12;
+
+const delay = (time) => {
+  return new Promise((res, rej) => {
+    setTimeout(res, time);
+  });
+};
 
 // Code that is generating the seats.
 // ----------------------------------
