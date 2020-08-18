@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
+const { getSeats } = require("./handlers");
 
 const { MONGO_URI } = process.env;
 
@@ -36,40 +37,7 @@ const getRowName = (rowIndex) => {
 
 let state;
 
-router.get("/api/seat-availability", async (req, res) => {
-  const databaseSetup = async () => {
-    const client = await MongoClient(MONGO_URI, options);
-    await client.connect();
-    console.log("connected");
-
-    const db = client.db("flights");
-    const dbSeats = db.collection("seats");
-
-    const dbSeatsArray = await dbSeats.find().toArray();
-
-    if (dbSeatsArray.length === 0) {
-      console.log("initial setup");
-      generateSeats();
-      await dbSeats.insertMany(Object.values(seats));
-    } else {
-      dbSeatsArray.map((seat) => {
-        seats[seat._id] = seat;
-      });
-    }
-
-    client.close();
-    console.log("closing");
-  };
-
-  await databaseSetup();
-  console.log("List of Seats: ", seats);
-
-  return res.json({
-    seats: seats,
-    numOfRows: 8,
-    seatsPerRow: 12,
-  });
-});
+router.get("/api/seat-availability", getSeats);
 
 let lastBookingAttemptSucceeded = false;
 
