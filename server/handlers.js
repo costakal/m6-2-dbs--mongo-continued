@@ -35,4 +35,33 @@ const getSeats = async (req, res) => {
   client.close();
 };
 
-module.exports = { getSeats };
+const updateSeat = async (req, res) => {
+  const client = await MongoClient(MONGO_URI, options);
+
+  try {
+    await client.connect();
+
+    const db = client.db("flights");
+
+    const { seatId } = req.body;
+
+    const query = { _id: seatId };
+    console.log(query);
+    const newValues = { $set: { isBooked: true } };
+
+    const r = await db.collection("seats").updateOne(query, newValues);
+
+    if (r.modifiedCount === 0) {
+      res.status(200).json({ success: false, message: "Seat Unavailable" });
+    } else {
+      res.status(200).json({ success: true, message: "Seat Booked" });
+    }
+  } catch (err) {
+    console.log(err.stack);
+    res.status(500).json({ status: 500, message: err.message });
+  }
+
+  client.close();
+};
+
+module.exports = { getSeats, updateSeat };
